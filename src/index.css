@@ -1,0 +1,53 @@
+:root {
+  --bg-a: #fffef8;
+  --bg-b: #f8f5ee;
+  --panel-bg: #fffcf6;
+  --ink: #0e1c35;
+  --ink-soft: #273450;
+  --muted: #65708a;
+  --border: #e6ddd0;
+  --accent: #f9a826;
+
+  font-family: "Segoe UI", "Tahoma", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--ink);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: radial-gradient(
+      circle at 15% 10%,
+      rgba(249, 168, 38, 0.13),
+      transparent 45%
+    ),
+    linear-gradient(170deg, var(--bg-a), var(--bg-b));
+  color: var(--ink);
+}
+
+a {
+  text-decoration: none;
+}
+
+input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: #fff;
+}
+
+input:focus-visible {
+  outline: 2px solid #ffcd80;
+  outline-offset: 1px;
+}
