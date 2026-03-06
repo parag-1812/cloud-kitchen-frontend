@@ -81,7 +81,7 @@ function CreateOrder({ customerId, onOrderCreated }) {
 
     setIsSubmitting(true);
     try {
-      const result = await createOrder(customerId, normalizedItems);
+      const result = await createOrder(normalizedItems);
       setCreatedSummary(result);
       setItems([emptyItem()]);
       onOrderCreated();

@@ -6,6 +6,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+
   const token = localStorage.getItem("token");
 
   if (token) {
@@ -55,8 +56,10 @@ export function getApiErrorMessage(error) {
   if (error?.response?.data?.message) {
     return error.response.data.message;
   }
+
   if (typeof error?.response?.data === "string") {
     return error.response.data;
   }
+
   return "Something went wrong while talking to backend.";
 }
