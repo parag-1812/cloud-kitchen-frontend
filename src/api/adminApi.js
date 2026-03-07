@@ -20,3 +20,7 @@ export const getStats = async () => {
   return res.data;
 };
 
+export const getAllOrders = async () => {
+  const res = await api.get("/admin/orders");
+  return res.data;
+};
