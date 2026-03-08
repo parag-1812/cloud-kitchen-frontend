@@ -1,46 +1,59 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getStats, getAllOrders } from "../api/adminApi";
 
 function AdminPage() {
+
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    totalRevenue: 0
+  });
+
   const [orders, setOrders] = useState([]);
-  const [revenue, setRevenue] = useState(0);
-  const [count, setCount] = useState(0);
-
-  const token = localStorage.getItem("token");
-
-  const fetchData = async () => {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
-    const ordersRes = await axios.get("http://localhost:8080/admin/orders", { headers });
-    const revenueRes = await axios.get("http://localhost:8080/admin/revenue", { headers });
-    const countRes = await axios.get("http://localhost:8080/admin/orders/count", { headers });
-
-    setOrders(ordersRes.data);
-    setRevenue(revenueRes.data);
-    setCount(countRes.data);
-  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  const fetchData = async () => {
+
+    const statsData = await getStats();
+    const ordersData = await getAllOrders();
+
+    setStats(statsData);
+    setOrders(ordersData);
+  };
+
   return (
-    <div>
+    <div style={{ padding: "40px" }}>
       <h2>Admin Dashboard</h2>
-      <p>Total Orders: {count}</p>
-      <p>Total Revenue: ₹{revenue}</p>
+
+      <p>Total Orders: {stats.totalOrders}</p>
+      <p>Total Revenue: ₹{stats.totalRevenue}</p>
 
       <h3>All Orders</h3>
-      {orders.map(order => (
-        <div key={order.orderId}>
-          <p>Order #{order.orderId}</p>
-          <p>Status: {order.status}</p>
-          <p>Total: ₹{order.totalPrice}</p>
-          <hr />
-        </div>
-      ))}
+
+      <table border="1" cellPadding="10">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Status</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {orders.map((o) => (
+            <tr key={o.id}>
+              <td>{o.id}</td>
+              <td>{o.customerId}</td>
+              <td>{o.status}</td>
+              <td>₹{o.totalPrice}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
     </div>
   );
 }
