@@ -28,7 +28,7 @@ function AdminPage() {
       <h2>Admin Dashboard</h2>
 
       <p>Total Orders: {stats.totalOrders}</p>
-      <p>Total Revenue: ₹{stats.totalRevenue}</p>
+      <p>Total Revenue: Rs. {stats.totalRevenue}</p>
 
       <h3>All Orders</h3>
 
@@ -44,16 +44,15 @@ function AdminPage() {
 
         <tbody>
           {orders.map((o) => (
-            <tr key={o.id}>
-              <td>{o.id}</td>
+            <tr key={o.orderId}>
+              <td>{o.orderId}</td>
               <td>{o.customerId}</td>
               <td>{o.status}</td>
-              <td>₹{o.totalPrice}</td>
+              <td>Rs. {o.totalPrice}</td>
             </tr>
           ))}
         </tbody>
       </table>
-
     </div>
   );
 }
