@@ -10,7 +10,7 @@ function emptyItem() {
   return { ingredientId: "", quantity: 1 };
 }
 
-function CreateOrder({ customerId, onOrderCreated }) {
+function CreateOrder({ onOrderCreated }) {
   const [items, setItems] = useState([emptyItem()]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -43,9 +43,6 @@ function CreateOrder({ customerId, onOrderCreated }) {
   }
 
   function validateItems() {
-    if (!Number.isInteger(customerId) || customerId <= 0) {
-      return "Please enter a valid customer ID.";
-    }
     if (!items.length) {
       return "Add at least one item.";
     }

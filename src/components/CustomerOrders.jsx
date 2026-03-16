@@ -12,31 +12,24 @@ const cancellableStatuses = new Set([
   ORDER_STATUS.KITCHEN_ASSIGNED,
 ]);
 
-function CustomerOrders({ customerId, refreshKey }) {
+function CustomerOrders({ refreshKey }) {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [activeCancelOrderId, setActiveCancelOrderId] = useState(null);
 
-  const hasValidCustomerId = Number.isInteger(customerId) && customerId > 0;
-
   const loadOrders = useCallback(async () => {
-    if (!hasValidCustomerId) {
-      setOrders([]);
-      return;
-    }
-
     setIsLoading(true);
     setErrorMessage("");
     try {
-      const result = await getCustomerOrders(customerId);
+      const result = await getCustomerOrders();
       setOrders(result);
     } catch (error) {
       setErrorMessage(getApiErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
-  }, [customerId, hasValidCustomerId]);
+  }, []);
 
   useEffect(() => {
     loadOrders();
@@ -66,20 +59,16 @@ function CustomerOrders({ customerId, refreshKey }) {
         <button
           className="btn secondary"
           onClick={loadOrders}
-          disabled={isLoading || !hasValidCustomerId}
+          disabled={isLoading}
         >
           {isLoading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
-      {!hasValidCustomerId ? (
-        <p className="meta-line">Enter a valid customer ID to fetch orders.</p>
-      ) : null}
-
       {errorMessage ? <p className="error-text">{errorMessage}</p> : null}
 
-      {!isLoading && hasValidCustomerId && sortedOrders.length === 0 ? (
-        <p className="meta-line">No orders found for customer #{customerId}.</p>
+      {!isLoading && sortedOrders.length === 0 ? (
+        <p className="meta-line">No orders found for the authenticated customer.</p>
       ) : null}
 
       <div className="order-list">

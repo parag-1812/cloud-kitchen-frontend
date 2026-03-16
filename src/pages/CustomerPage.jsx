@@ -3,9 +3,7 @@ import CreateOrder from "../components/CreateOrder";
 import CustomerOrders from "../components/CustomerOrders";
 
 function CustomerPage() {
-  const [customerIdInput, setCustomerIdInput] = useState("101");
   const [refreshKey, setRefreshKey] = useState(0);
-  const customerId = Number(customerIdInput);
 
   return (
     <div className="page-grid">
@@ -13,23 +11,13 @@ function CustomerPage() {
         <div className="panel-header">
           <h2>Customer Context</h2>
         </div>
-        <div className="field">
-          <label htmlFor="customer-id">Customer ID</label>
-          <input
-            id="customer-id"
-            type="number"
-            min="1"
-            value={customerIdInput}
-            onChange={(event) => setCustomerIdInput(event.target.value)}
-          />
-        </div>
+        <p className="meta-line">
+          Customer identity is resolved from the logged-in user&apos;s JWT.
+        </p>
       </section>
 
-      <CreateOrder
-        customerId={customerId}
-        onOrderCreated={() => setRefreshKey((value) => value + 1)}
-      />
-      <CustomerOrders customerId={customerId} refreshKey={refreshKey} />
+      <CreateOrder onOrderCreated={() => setRefreshKey((value) => value + 1)} />
+      <CustomerOrders refreshKey={refreshKey} />
     </div>
   );
 }
