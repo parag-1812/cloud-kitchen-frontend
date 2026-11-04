@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AiDishBuilder from "../components/AiDishBuilder";
 import CreateOrder from "../components/CreateOrder";
 import CustomerOrders from "../components/CustomerOrders";
 
@@ -15,6 +16,8 @@ function CustomerPage() {
           Customer identity is resolved from the logged-in user&apos;s JWT.
         </p>
       </section>
+
+      <AiDishBuilder />
 
       <CreateOrder onOrderCreated={() => setRefreshKey((value) => value + 1)} />
       <CustomerOrders refreshKey={refreshKey} />
