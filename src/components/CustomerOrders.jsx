@@ -6,6 +6,7 @@ import {
   ORDER_STATUS,
 } from "../api/ordersApi";
 import OrderDish from "./OrderDish";
+import OrderTracker from "./OrderTracker";
 
 const cancellableStatuses = new Set([
   ORDER_STATUS.CREATED,
@@ -19,22 +20,28 @@ function CustomerOrders({ refreshKey }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [activeCancelOrderId, setActiveCancelOrderId] = useState(null);
 
-  const loadOrders = useCallback(async () => {
-    setIsLoading(true);
+  const loadOrders = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true);
     setErrorMessage("");
     try {
       const result = await getCustomerOrders();
       setOrders(result);
     } catch (error) {
-      setErrorMessage(getApiErrorMessage(error));
+      if (!silent) setErrorMessage(getApiErrorMessage(error));
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
     loadOrders();
   }, [loadOrders, refreshKey]);
+
+  // Live updates: silently re-poll every 5s so status changes appear automatically.
+  useEffect(() => {
+    const id = setInterval(() => loadOrders(true), 5000);
+    return () => clearInterval(id);
+  }, [loadOrders]);
 
   async function handleCancel(orderId) {
     setActiveCancelOrderId(orderId);
@@ -59,7 +66,7 @@ function CustomerOrders({ refreshKey }) {
         <h2>My Orders</h2>
         <button
           className="btn secondary"
-          onClick={loadOrders}
+          onClick={() => loadOrders()}
           disabled={isLoading}
         >
           {isLoading ? "Refreshing..." : "Refresh"}
@@ -83,10 +90,15 @@ function CustomerOrders({ refreshKey }) {
             </div>
 
             <div className="order-meta">
-              <span>Kitchen #{order.kitchenId}</span>
+              <span>
+                {order.kitchenName || `Kitchen #${order.kitchenId}`}
+                {order.distanceKm != null ? ` · ${order.distanceKm} km` : ""}
+              </span>
               <span>Rs. {order.totalPrice?.toFixed?.(2) ?? order.totalPrice}</span>
               <span>{order.totalPrepTime} min</span>
             </div>
+
+            <OrderTracker status={order.status} />
 
             <OrderDish order={order} />
 

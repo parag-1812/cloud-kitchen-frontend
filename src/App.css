@@ -430,6 +430,74 @@ th {
   color: var(--muted);
 }
 
+/* ---- Live order tracker ---- */
+.tracker {
+  display: flex;
+  margin: 2px 0 12px;
+}
+
+.tracker-step {
+  flex: 1;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  position: relative;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.tracker-step::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.tracker-step:first-child::before {
+  display: none;
+}
+
+.tracker-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--border);
+  z-index: 1;
+}
+
+.tracker-step.done .tracker-dot,
+.tracker-step.active .tracker-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.tracker-step.done::before,
+.tracker-step.active::before {
+  background: var(--accent);
+}
+
+.tracker-step.active .tracker-dot {
+  box-shadow: 0 0 0 4px rgba(249, 168, 38, 0.25);
+}
+
+.tracker-step.active .tracker-label,
+.tracker-step.done .tracker-label {
+  color: var(--ink);
+}
+
+.tracker-cancelled {
+  margin: 2px 0 12px;
+  color: #b0201a;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
 /* ---- Admin stat tiles ---- */
 .stat-grid {
   display: grid;

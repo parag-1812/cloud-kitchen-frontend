@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getAiErrorMessage, parseDish } from "../api/aiApi";
 import { createCustomOrder } from "../api/ordersApi";
 import { getApiErrorMessage } from "../api/ordersApi";
@@ -7,6 +7,17 @@ const EXAMPLES = [
   "Boneless chicken in tomato gravy, medium spicy, extra garlic, less oil",
   "Spicy paneer with extra coriander, homemade style",
   "Jain veg hakka noodles, no onion no garlic, dry",
+];
+
+// Fallback delivery location (city centre) used if the browser denies geolocation,
+// so nearest-kitchen routing still works in the demo.
+const DEFAULT_LOCATION = { lat: 22.7196, lng: 75.8577 };
+
+// One-tap AI transforms applied to the current dish.
+const TRANSFORMS = [
+  { label: "🥗 Healthier", instr: "make it a healthier version: less oil, grilled or steamed, no cream" },
+  { label: "🌱 Make vegan", instr: "make it fully vegan: no meat, egg, paneer, or dairy" },
+  { label: "💪 High protein", instr: "make it a high-protein version" },
 ];
 
 function Detail({ label, value }) {
@@ -42,10 +53,22 @@ function AiDishBuilder({ onOrderCreated }) {
   const [quantity, setQuantity] = useState(1);
   const [isPlacing, setIsPlacing] = useState(false);
   const [placed, setPlaced] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [builtText, setBuiltText] = useState("");
 
-  async function handleBuild(event) {
-    event.preventDefault();
-    if (!text.trim()) {
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => setLocation(null),
+        { timeout: 5000 }
+      );
+    }
+  }, []);
+
+  async function buildFromText(sourceText) {
+    const t = (sourceText || "").trim();
+    if (!t) {
       setError("Describe the dish you want.");
       return;
     }
@@ -54,8 +77,9 @@ function AiDishBuilder({ onOrderCreated }) {
     setPlaced(null);
     setIsLoading(true);
     try {
-      const result = await parseDish(text.trim());
+      const result = await parseDish(t);
       setDish(result);
+      setBuiltText(t);
       setQuantity(1);
     } catch (err) {
       setError(getAiErrorMessage(err));
@@ -64,11 +88,28 @@ function AiDishBuilder({ onOrderCreated }) {
     }
   }
 
+  function handleBuild(event) {
+    event.preventDefault();
+    buildFromText(text);
+  }
+
+  function applyTransform(instr) {
+    const nt = `${builtText}. Now ${instr}.`;
+    setText(nt);
+    buildFromText(nt);
+  }
+
   async function handlePlaceOrder() {
     setError("");
     setIsPlacing(true);
     try {
-      const result = await createCustomOrder({ ...dish, quantity: Number(quantity) || 1 });
+      const loc = location || DEFAULT_LOCATION;
+      const result = await createCustomOrder({
+        ...dish,
+        quantity: Number(quantity) || 1,
+        customerLat: loc.lat,
+        customerLng: loc.lng,
+      });
       setPlaced(result);
       setDish(null);
       setText("");
@@ -129,7 +170,9 @@ function AiDishBuilder({ onOrderCreated }) {
       {placed ? (
         <div className="success-box">
           <p>
-            ✅ Order <strong>#{placed.orderId}</strong> placed and assigned to kitchen #{placed.kitchenId}.
+            ✅ Order <strong>#{placed.orderId}</strong> placed — routed to your nearest kitchen:{" "}
+            <strong>{placed.kitchenName || `Kitchen #${placed.kitchenId}`}</strong>
+            {placed.distanceKm != null ? ` · ${placed.distanceKm} km away` : ""}.
           </p>
           <p>
             Total: <strong>Rs. {placed.totalPrice}</strong> · Prep time: {placed.totalPrepTime} min · Status: {placed.status}
@@ -164,6 +207,23 @@ function AiDishBuilder({ onOrderCreated }) {
               <strong>Special instructions:</strong> {dish.specialInstructions}
             </p>
           ) : null}
+
+          <div className="dish-tagrow">
+            <span className="dish-detail-label">Tweak with AI</span>
+            <div className="catalog-row">
+              {TRANSFORMS.map((t) => (
+                <button
+                  type="button"
+                  key={t.label}
+                  className="pill ai-example"
+                  disabled={isLoading}
+                  onClick={() => applyTransform(t.instr)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {dish.nutrition ? (
             <div className="nutri-row">
