@@ -68,6 +68,21 @@ export async function cancelOrder(orderId) {
   return response.data;
 }
 
+export async function rateOrder(orderId, rating, review) {
+  const response = await api.patch(`/orders/${orderId}/rating`, { rating, review });
+  return response.data;
+}
+
+export async function setFavorite(orderId, favorite) {
+  const response = await api.patch(`/orders/${orderId}/favorite`, { favorite });
+  return response.data;
+}
+
+export async function reorderOrder(orderId) {
+  const response = await api.post(`/orders/${orderId}/reorder`);
+  return response.data;
+}
+
 export function getApiErrorMessage(error) {
   if (error?.response?.data?.message) {
     return error.response.data.message;

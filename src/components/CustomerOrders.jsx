@@ -5,10 +5,14 @@ import {
   getApiErrorMessage,
   getCustomerOrders,
   ORDER_STATUS,
+  rateOrder,
+  reorderOrder,
+  setFavorite,
   verifyPayment,
 } from "../api/ordersApi";
 import OrderDish from "./OrderDish";
 import OrderTracker from "./OrderTracker";
+import StarRating from "./StarRating";
 
 const cancellableStatuses = new Set([
   ORDER_STATUS.CREATED,
@@ -16,12 +20,39 @@ const cancellableStatuses = new Set([
   ORDER_STATUS.KITCHEN_ASSIGNED,
 ]);
 
+/** Inline star + review form for a delivered, not-yet-rated order. */
+function ReviewForm({ onSubmit, submitting }) {
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  return (
+    <div className="review-form">
+      <StarRating value={rating} onChange={setRating} />
+      <textarea
+        className="ai-input"
+        rows={2}
+        placeholder="Add a review (optional)"
+        value={review}
+        onChange={(e) => setReview(e.target.value)}
+      />
+      <button
+        className="btn secondary"
+        disabled={submitting || rating < 1}
+        onClick={() => onSubmit(rating, review)}
+      >
+        {submitting ? "Saving…" : "Submit review"}
+      </button>
+    </div>
+  );
+}
+
 function CustomerOrders({ refreshKey }) {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [activeCancelOrderId, setActiveCancelOrderId] = useState(null);
   const [payingId, setPayingId] = useState(null);
+  const [ratingId, setRatingId] = useState(null);
+  const [busyId, setBusyId] = useState(null);
 
   const loadOrders = useCallback(async (silent = false) => {
     if (!silent) setIsLoading(true);
@@ -104,6 +135,42 @@ function CustomerOrders({ refreshKey }) {
     }
   }
 
+  async function handleRate(orderId, rating, review) {
+    setRatingId(orderId);
+    setErrorMessage("");
+    try {
+      await rateOrder(orderId, rating, review);
+      await loadOrders();
+    } catch (err) {
+      setErrorMessage(getApiErrorMessage(err));
+    } finally {
+      setRatingId(null);
+    }
+  }
+
+  async function handleFavorite(order) {
+    setErrorMessage("");
+    try {
+      await setFavorite(order.orderId, !order.favorite);
+      await loadOrders(true);
+    } catch (err) {
+      setErrorMessage(getApiErrorMessage(err));
+    }
+  }
+
+  async function handleReorder(orderId) {
+    setBusyId(orderId);
+    setErrorMessage("");
+    try {
+      await reorderOrder(orderId);
+      await loadOrders();
+    } catch (err) {
+      setErrorMessage(getApiErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   const sortedOrders = useMemo(() => {
     return [...orders].sort((a, b) => b.orderId - a.orderId);
   }, [orders]);
@@ -132,9 +199,20 @@ function CustomerOrders({ refreshKey }) {
           <article className="order-card" key={order.orderId}>
             <div className="order-head">
               <h3>Order #{order.orderId}</h3>
-              <span className={`badge status-${order.status?.toLowerCase()}`}>
-                {order.status}
-              </span>
+              <div className="order-head-right">
+                <button
+                  type="button"
+                  className={`fav-btn ${order.favorite ? "on" : ""}`}
+                  onClick={() => handleFavorite(order)}
+                  title={order.favorite ? "Remove from favourites" : "Add to favourites"}
+                  aria-label="Toggle favourite"
+                >
+                  {order.favorite ? "♥" : "♡"}
+                </button>
+                <span className={`badge status-${order.status?.toLowerCase()}`}>
+                  {order.status}
+                </span>
+              </div>
             </div>
 
             <div className="order-meta">
@@ -150,6 +228,20 @@ function CustomerOrders({ refreshKey }) {
 
             <OrderDish order={order} />
 
+            {order.status === ORDER_STATUS.DELIVERED ? (
+              order.rating ? (
+                <div className="rated">
+                  <StarRating value={order.rating} />
+                  {order.review ? <p className="meta-line">“{order.review}”</p> : null}
+                </div>
+              ) : (
+                <ReviewForm
+                  submitting={ratingId === order.orderId}
+                  onSubmit={(r, rv) => handleRate(order.orderId, r, rv)}
+                />
+              )
+            ) : null}
+
             <div className="action-row">
               {order.paymentStatus === "PAID" ? (
                 <span className="badge status-delivered">✅ Paid</span>
@@ -164,6 +256,14 @@ function CustomerOrders({ refreshKey }) {
                     : `Pay Rs. ${order.totalPrice?.toFixed?.(2) ?? order.totalPrice}`}
                 </button>
               ) : null}
+
+              <button
+                className="btn ghost"
+                onClick={() => handleReorder(order.orderId)}
+                disabled={busyId === order.orderId}
+              >
+                {busyId === order.orderId ? "Reordering…" : "🔁 Reorder"}
+              </button>
             </div>
 
             {cancellableStatuses.has(order.status) ? (
