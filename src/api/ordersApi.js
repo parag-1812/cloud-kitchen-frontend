@@ -43,6 +43,16 @@ export async function getCustomerOrders() {
   return response.data;
 }
 
+export async function createPayment(orderId) {
+  const response = await api.post(`/orders/${orderId}/pay`);
+  return response.data;
+}
+
+export async function verifyPayment(orderId, payload) {
+  const response = await api.post(`/orders/${orderId}/pay/verify`, payload);
+  return response.data;
+}
+
 export async function getKitchenOrders(kitchenId) {
   const response = await api.get(`/orders/kitchen/${kitchenId}`);
   return response.data;

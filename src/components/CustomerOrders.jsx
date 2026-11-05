@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   cancelOrder,
+  createPayment,
   getApiErrorMessage,
   getCustomerOrders,
   ORDER_STATUS,
+  verifyPayment,
 } from "../api/ordersApi";
 import OrderDish from "./OrderDish";
 import OrderTracker from "./OrderTracker";
@@ -19,6 +21,7 @@ function CustomerOrders({ refreshKey }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [activeCancelOrderId, setActiveCancelOrderId] = useState(null);
+  const [payingId, setPayingId] = useState(null);
 
   const loadOrders = useCallback(async (silent = false) => {
     if (!silent) setIsLoading(true);
@@ -53,6 +56,51 @@ function CustomerOrders({ refreshKey }) {
       setErrorMessage(getApiErrorMessage(error));
     } finally {
       setActiveCancelOrderId(null);
+    }
+  }
+
+  async function handlePay(order) {
+    setErrorMessage("");
+    setPayingId(order.orderId);
+    try {
+      const p = await createPayment(order.orderId);
+      if (!window.Razorpay) {
+        setErrorMessage("Payment library didn't load. Check your connection and refresh.");
+        setPayingId(null);
+        return;
+      }
+      const rzp = new window.Razorpay({
+        key: p.keyId,
+        amount: p.amountPaise,
+        currency: p.currency,
+        order_id: p.razorpayOrderId,
+        name: "Cloud Kitchen",
+        description: `Order #${order.orderId}`,
+        theme: { color: "#f9a826" },
+        modal: { ondismiss: () => setPayingId(null) },
+        handler: async (resp) => {
+          try {
+            await verifyPayment(order.orderId, {
+              razorpayOrderId: resp.razorpay_order_id,
+              razorpayPaymentId: resp.razorpay_payment_id,
+              razorpaySignature: resp.razorpay_signature,
+            });
+            await loadOrders();
+          } catch (err) {
+            setErrorMessage(getApiErrorMessage(err));
+          } finally {
+            setPayingId(null);
+          }
+        },
+      });
+      rzp.on("payment.failed", () => {
+        setErrorMessage("Payment failed. Please try again.");
+        setPayingId(null);
+      });
+      rzp.open();
+    } catch (err) {
+      setErrorMessage(getApiErrorMessage(err));
+      setPayingId(null);
     }
   }
 
@@ -101,6 +149,22 @@ function CustomerOrders({ refreshKey }) {
             <OrderTracker status={order.status} />
 
             <OrderDish order={order} />
+
+            <div className="action-row">
+              {order.paymentStatus === "PAID" ? (
+                <span className="badge status-delivered">✅ Paid</span>
+              ) : order.status !== ORDER_STATUS.CANCELLED ? (
+                <button
+                  className="btn primary"
+                  onClick={() => handlePay(order)}
+                  disabled={payingId === order.orderId}
+                >
+                  {payingId === order.orderId
+                    ? "Opening…"
+                    : `Pay Rs. ${order.totalPrice?.toFixed?.(2) ?? order.totalPrice}`}
+                </button>
+              ) : null}
+            </div>
 
             {cancellableStatuses.has(order.status) ? (
               <div className="action-row">
