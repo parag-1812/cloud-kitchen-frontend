@@ -1,3 +1,5 @@
+import { foodEmoji } from "../utils/foodEmoji";
+
 function Chip({ label, value }) {
   if (value === null || value === undefined || value === "") return null;
   return (
@@ -20,7 +22,10 @@ function OrderDish({ order }) {
     const nonVeg = order.dishType === "NON_VEG";
     return (
       <div className="dish-block">
-        {order.dishSummary ? <p className="dish-summary">{order.dishSummary}</p> : null}
+        <div className="dish-title">
+          <span className="dish-emoji small">{foodEmoji(order)}</span>
+          <p className="dish-summary">{order.dishSummary || "Custom dish"}</p>
+        </div>
 
         <div className="chip-row">
           <span

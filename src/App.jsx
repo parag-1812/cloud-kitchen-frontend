@@ -31,9 +31,12 @@ function AppLayout({ children }) {
   return (
     <div className="app-layout">
       <header className="topbar">
-        <div>
-          <p className="kicker">🍳 Cloud Kitchen</p>
-          <h1>Cloud Kitchen Control Center</h1>
+        <div className="brand">
+          <span className="brand-logo">🍳</span>
+          <div className="brand-text">
+            <span className="brand-name">Cloud Kitchen</span>
+            <span className="brand-tag">Order food, your way</span>
+          </div>
         </div>
 
         <nav className="nav-tabs">
@@ -46,12 +49,7 @@ function AppLayout({ children }) {
         </nav>
       </header>
 
-      <main className="main-content">
-        <p className="intro">
-          Order food made exactly the way you imagine it — powered by AI.
-        </p>
-        {children}
-      </main>
+      <main className="main-content">{children}</main>
 
       <footer className="footer-note">
         Frontend secured with JWT authentication.

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getAiErrorMessage, parseDish } from "../api/aiApi";
 import { createCustomOrder } from "../api/ordersApi";
 import { getApiErrorMessage } from "../api/ordersApi";
+import { foodEmoji } from "../utils/foodEmoji";
 
 const EXAMPLES = [
   "Boneless chicken in tomato gravy, medium spicy, extra garlic, less oil",
@@ -124,45 +125,45 @@ function AiDishBuilder({ onOrderCreated }) {
   const isNonVeg = dish?.dishType === "NON_VEG";
 
   return (
-    <section className="panel">
-      <div className="panel-header">
-        <h2>{"✨"} Build a dish with AI</h2>
+    <section className="panel ai-hero">
+      <div className="ai-hero-head">
+        <span className="ai-hero-emoji">🍳</span>
+        <div>
+          <h2>What are you craving?</h2>
+          <p>
+            Describe any dish in your own words — AI builds the recipe, price &amp;
+            nutrition, then sends it to your nearest kitchen.
+          </p>
+        </div>
       </div>
 
       <form onSubmit={handleBuild}>
-        <div className="field">
-          <label htmlFor="dish-text">Describe your dish in your own words</label>
-          <textarea
-            id="dish-text"
-            className="ai-input"
-            rows={3}
-            value={text}
-            placeholder="e.g. boneless chicken in tomato gravy, medium spicy, extra garlic, less oil"
-            onChange={(event) => setText(event.target.value)}
-          />
+        <textarea
+          id="dish-text"
+          className="ai-input hero-input"
+          rows={2}
+          value={text}
+          placeholder="e.g. boneless chicken in tomato gravy, medium spicy, extra garlic, less oil"
+          onChange={(event) => setText(event.target.value)}
+        />
+
+        <div className="ai-examples">
+          <span className="ai-examples-label">Try:</span>
+          {EXAMPLES.map((example) => (
+            <button
+              type="button"
+              key={example}
+              className="hero-pill"
+              onClick={() => setText(example)}
+            >
+              {example}
+            </button>
+          ))}
         </div>
 
-        <div className="hint-box">
-          <p>Try one of these:</p>
-          <div className="catalog-row">
-            {EXAMPLES.map((example) => (
-              <button
-                type="button"
-                key={example}
-                className="pill ai-example"
-                onClick={() => setText(example)}
-              >
-                {example}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="action-row">
-          <button type="submit" className="btn primary" disabled={isLoading}>
-            {isLoading ? "Thinking…" : "✨ Build with AI"}
-          </button>
-        </div>
+        <button type="submit" className="btn hero-cta" disabled={isLoading}>
+          {isLoading ? "Cooking up your dish…" : "✨ Build with AI"}
+        </button>
       </form>
 
       {error ? <p className="error-text">{error}</p> : null}
@@ -183,7 +184,10 @@ function AiDishBuilder({ onOrderCreated }) {
       {dish ? (
         <div className="dish-card">
           <div className="order-head">
-            <h3>{dish.summary || "Your custom dish"}</h3>
+            <div className="dish-title">
+              <span className="dish-emoji">{foodEmoji(dish)}</span>
+              <h3>{dish.summary || "Your custom dish"}</h3>
+            </div>
             <span className={`badge ${isNonVeg ? "status-cancelled" : "status-delivered"}`}>
               {isNonVeg ? "NON-VEG" : "VEG"}
             </span>

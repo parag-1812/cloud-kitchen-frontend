@@ -1,14 +1,23 @@
 :root {
-  --bg-a: #fffef8;
-  --bg-b: #f8f5ee;
-  --panel-bg: #fffcf6;
-  --ink: #0e1c35;
-  --ink-soft: #273450;
-  --muted: #65708a;
-  --border: #e6ddd0;
-  --accent: #f9a826;
+  /* Brand palette (from the product vision) */
+  --orange: #ff6b35;
+  --orange-dark: #e2551f;
+  --green: #2ecc71;
+  --green-dark: #27ae60;
+  --charcoal: #1e1e1e;
 
-  font-family: "Segoe UI", "Tahoma", sans-serif;
+  /* Semantic tokens reused across the app */
+  --bg-a: #fff5ef;
+  --bg-b: #f4f5f7;
+  --panel-bg: #ffffff;
+  --ink: #1e1e1e;
+  --ink-soft: #3b3b44;
+  --muted: #86868f;
+  --border: #eceaf0;
+  --accent: #ff6b35;
+
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: var(--ink);
@@ -24,12 +33,11 @@
 body {
   margin: 0;
   min-width: 320px;
-  background: radial-gradient(
-      circle at 15% 10%,
-      rgba(249, 168, 38, 0.13),
-      transparent 45%
-    ),
-    linear-gradient(170deg, var(--bg-a), var(--bg-b));
+  background:
+    radial-gradient(circle at 12% -5%, rgba(255, 107, 53, 0.16), transparent 42%),
+    radial-gradient(circle at 95% 0%, rgba(46, 204, 113, 0.1), transparent 40%),
+    linear-gradient(180deg, var(--bg-a), var(--bg-b) 320px);
+  background-attachment: fixed;
   color: var(--ink);
 }
 
@@ -37,17 +45,20 @@ a {
   text-decoration: none;
 }
 
-input {
+input,
+textarea {
   width: 100%;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 0.95rem;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 11px 13px;
+  font: inherit;
   color: var(--ink);
   background: #fff;
 }
 
-input:focus-visible {
-  outline: 2px solid #ffcd80;
-  outline-offset: 1px;
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.16);
 }
