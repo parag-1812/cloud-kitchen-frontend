@@ -300,22 +300,22 @@ function AiDishBuilder({ onOrderCreated }) {
             </div>
           </div>
 
-          {dish.nutrition ? (
+          {dish.nutrition && dish.nutrition.calories != null ? (
             <div className="nutri-row">
               <div className="nutri-tile">
-                <span className="nutri-value">{dish.nutrition.calories}</span>
+                <span className="nutri-value">{dish.nutrition.calories ?? "—"}</span>
                 <span className="nutri-label">kcal</span>
               </div>
               <div className="nutri-tile">
-                <span className="nutri-value">{dish.nutrition.proteinGrams}g</span>
+                <span className="nutri-value">{dish.nutrition.proteinGrams ?? "—"}g</span>
                 <span className="nutri-label">Protein</span>
               </div>
               <div className="nutri-tile">
-                <span className="nutri-value">{dish.nutrition.carbsGrams}g</span>
+                <span className="nutri-value">{dish.nutrition.carbsGrams ?? "—"}g</span>
                 <span className="nutri-label">Carbs</span>
               </div>
               <div className="nutri-tile">
-                <span className="nutri-value">{dish.nutrition.fatGrams}g</span>
+                <span className="nutri-value">{dish.nutrition.fatGrams ?? "—"}g</span>
                 <span className="nutri-label">Fat</span>
               </div>
             </div>
