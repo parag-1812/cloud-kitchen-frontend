@@ -745,6 +745,99 @@ th {
   font-size: 1.25rem;
 }
 
+/* ---- Voice input + confidence + refine ---- */
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-mic {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #fff;
+}
+
+.hero-mic:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.hero-mic.on {
+  background: #fff;
+  color: var(--orange-dark);
+  animation: micpulse 1s ease-in-out infinite;
+}
+
+@keyframes micpulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55); }
+  50% { box-shadow: 0 0 0 7px rgba(255, 255, 255, 0); }
+}
+
+.voice-conf {
+  margin: 10px 0 0;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.dish-head-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.conf-badge {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.conf-badge.conf-high {
+  background: #e3f7df;
+  color: #1f6e17;
+  border-color: #b8e3b0;
+}
+
+.conf-badge.conf-mid {
+  background: #fff4d6;
+  color: #8a6400;
+  border-color: #ecd48f;
+}
+
+.conf-badge.conf-low {
+  background: #fde3e2;
+  color: #902726;
+  border-color: #efb1ae;
+}
+
+.refine-form {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 12px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: #fff8f3;
+}
+
+.refine-row {
+  display: flex;
+  gap: 8px;
+}
+
+.refine-row .ai-input {
+  flex: 1;
+}
+
+@media (max-width: 560px) {
+  .refine-row {
+    flex-direction: column;
+  }
+}
+
 /* ---- Admin stat tiles ---- */
 .stat-grid {
   display: grid;

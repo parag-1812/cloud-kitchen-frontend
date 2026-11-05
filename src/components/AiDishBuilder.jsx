@@ -21,6 +21,13 @@ const TRANSFORMS = [
   { label: "💪 High protein", instr: "make it a high-protein version" },
 ];
 
+function confidenceClass(c) {
+  if (c == null) return "";
+  if (c >= 80) return "conf-high";
+  if (c >= 50) return "conf-mid";
+  return "conf-low";
+}
+
 function Detail({ label, value }) {
   return (
     <div className="dish-detail">
@@ -56,6 +63,9 @@ function AiDishBuilder({ onOrderCreated }) {
   const [placed, setPlaced] = useState(null);
   const [location, setLocation] = useState(null);
   const [builtText, setBuiltText] = useState("");
+  const [listening, setListening] = useState(false);
+  const [voiceConfidence, setVoiceConfidence] = useState(null);
+  const [refineText, setRefineText] = useState("");
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -98,6 +108,44 @@ function AiDishBuilder({ onOrderCreated }) {
     const nt = `${builtText}. Now ${instr}.`;
     setText(nt);
     buildFromText(nt);
+  }
+
+  // Add to / refine the current dish WITHOUT losing the original prompt.
+  function applyRefine(event) {
+    event.preventDefault();
+    const add = refineText.trim();
+    if (!add) return;
+    const base = builtText || text;
+    const nt = `${base}. Also, ${add}.`;
+    setText(nt);
+    setRefineText("");
+    buildFromText(nt);
+  }
+
+  // Voice → text using the browser's free Web Speech API.
+  function startVoice() {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setError("Voice input isn't supported in this browser — try Chrome or Edge.");
+      return;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = "en-IN";
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    setError("");
+    setVoiceConfidence(null);
+    setListening(true);
+    rec.onresult = (e) => {
+      const res = e.results[0][0];
+      const heard = res.transcript;
+      setText((prev) => (prev ? `${prev} ${heard}` : heard));
+      setVoiceConfidence(res.confidence ? Math.round(res.confidence * 100) : null);
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    rec.start();
   }
 
   async function handlePlaceOrder() {
@@ -161,9 +209,25 @@ function AiDishBuilder({ onOrderCreated }) {
           ))}
         </div>
 
-        <button type="submit" className="btn hero-cta" disabled={isLoading}>
-          {isLoading ? "Cooking up your dish…" : "✨ Build with AI"}
-        </button>
+        <div className="hero-actions">
+          <button
+            type="button"
+            className={`btn hero-mic ${listening ? "on" : ""}`}
+            onClick={startVoice}
+          >
+            {listening ? "🎙️ Listening…" : "🎤 Speak"}
+          </button>
+          <button type="submit" className="btn hero-cta" disabled={isLoading}>
+            {isLoading ? "Cooking up your dish…" : "✨ Build with AI"}
+          </button>
+        </div>
+
+        {voiceConfidence != null ? (
+          <p className="voice-conf">
+            🎧 Heard you with <strong>{voiceConfidence}%</strong> confidence
+            {voiceConfidence < 60 ? " — tweak the text above before building." : ""}.
+          </p>
+        ) : null}
       </form>
 
       {error ? <p className="error-text">{error}</p> : null}
@@ -188,9 +252,16 @@ function AiDishBuilder({ onOrderCreated }) {
               <span className="dish-emoji">{foodEmoji(dish)}</span>
               <h3>{dish.summary || "Your custom dish"}</h3>
             </div>
-            <span className={`badge ${isNonVeg ? "status-cancelled" : "status-delivered"}`}>
-              {isNonVeg ? "NON-VEG" : "VEG"}
-            </span>
+            <div className="dish-head-badges">
+              {typeof dish.confidence === "number" && dish.confidence > 0 ? (
+                <span className={`conf-badge ${confidenceClass(dish.confidence)}`}>
+                  AI understood this {dish.confidence}%
+                </span>
+              ) : null}
+              <span className={`badge ${isNonVeg ? "status-cancelled" : "status-delivered"}`}>
+                {isNonVeg ? "NON-VEG" : "VEG"}
+              </span>
+            </div>
           </div>
 
           <div className="dish-grid">
@@ -270,6 +341,25 @@ function AiDishBuilder({ onOrderCreated }) {
               </div>
             </div>
           ) : null}
+
+          <form className="refine-form" onSubmit={applyRefine}>
+            <span className="dish-detail-label">Not quite right? Add or change something</span>
+            <div className="refine-row">
+              <input
+                className="ai-input"
+                placeholder="e.g. add mushrooms, make it spicier, no onion"
+                value={refineText}
+                onChange={(event) => setRefineText(event.target.value)}
+              />
+              <button
+                type="submit"
+                className="btn secondary"
+                disabled={isLoading || !refineText.trim()}
+              >
+                {isLoading ? "Updating…" : "Update dish"}
+              </button>
+            </div>
+          </form>
 
           <div className="action-row">
             <div className="field" style={{ maxWidth: "120px" }}>
