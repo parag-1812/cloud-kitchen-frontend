@@ -5,6 +5,7 @@ import {
   ORDER_STATUS,
   updateOrderStatus,
 } from "../api/ordersApi";
+import OrderDish from "./OrderDish";
 
 const nextStatusAction = {
   [ORDER_STATUS.KITCHEN_ASSIGNED]: {
@@ -114,28 +115,7 @@ function KitchenDashboard({ kitchenId }) {
                 <span>{order.totalPrepTime} min</span>
               </div>
 
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Ingredient ID</th>
-                      <th>Qty</th>
-                      <th>Unit Price</th>
-                      <th>Prep Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.items?.map((item, index) => (
-                      <tr key={`${order.orderId}-${index}`}>
-                        <td>{item.ingredientId}</td>
-                        <td>{item.quantity}</td>
-                        <td>Rs. {item.priceAtOrderTime}</td>
-                        <td>{item.prepTimeAtOrderTime} min</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <OrderDish order={order} />
 
               {action ? (
                 <div className="action-row">

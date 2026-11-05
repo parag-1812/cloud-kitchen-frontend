@@ -32,6 +32,12 @@ export async function createOrder(items) {
   return response.data;
 }
 
+export async function createCustomOrder(dish) {
+  // dish is the AI ParsedDish (+ quantity); order-engine prices and routes it.
+  const response = await api.post(`/orders/custom`, dish);
+  return response.data;
+}
+
 export async function getCustomerOrders() {
   const response = await api.get(`/orders/customer`);
   return response.data;

@@ -32,7 +32,7 @@ function AppLayout({ children }) {
     <div className="app-layout">
       <header className="topbar">
         <div>
-          <p className="kicker">Order Engine</p>
+          <p className="kicker">🍳 Cloud Kitchen</p>
           <h1>Cloud Kitchen Control Center</h1>
         </div>
 
@@ -48,7 +48,7 @@ function AppLayout({ children }) {
 
       <main className="main-content">
         <p className="intro">
-          Create, track, and process orders using your Spring backend APIs.
+          Order food made exactly the way you imagine it — powered by AI.
         </p>
         {children}
       </main>

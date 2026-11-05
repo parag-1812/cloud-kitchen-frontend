@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { getAiErrorMessage, parseDish } from "../api/aiApi";
+import { createCustomOrder } from "../api/ordersApi";
+import { getApiErrorMessage } from "../api/ordersApi";
 
 const EXAMPLES = [
   "Boneless chicken in tomato gravy, medium spicy, extra garlic, less oil",
@@ -31,11 +33,15 @@ function TagRow({ label, tags }) {
   );
 }
 
-function AiDishBuilder() {
+function AiDishBuilder({ onOrderCreated }) {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [dish, setDish] = useState(null);
+
+  const [quantity, setQuantity] = useState(1);
+  const [isPlacing, setIsPlacing] = useState(false);
+  const [placed, setPlaced] = useState(null);
 
   async function handleBuild(event) {
     event.preventDefault();
@@ -45,14 +51,32 @@ function AiDishBuilder() {
     }
     setError("");
     setDish(null);
+    setPlaced(null);
     setIsLoading(true);
     try {
       const result = await parseDish(text.trim());
       setDish(result);
+      setQuantity(1);
     } catch (err) {
       setError(getAiErrorMessage(err));
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handlePlaceOrder() {
+    setError("");
+    setIsPlacing(true);
+    try {
+      const result = await createCustomOrder({ ...dish, quantity: Number(quantity) || 1 });
+      setPlaced(result);
+      setDish(null);
+      setText("");
+      if (onOrderCreated) onOrderCreated();
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setIsPlacing(false);
     }
   }
 
@@ -102,6 +126,17 @@ function AiDishBuilder() {
 
       {error ? <p className="error-text">{error}</p> : null}
 
+      {placed ? (
+        <div className="success-box">
+          <p>
+            ✅ Order <strong>#{placed.orderId}</strong> placed and assigned to kitchen #{placed.kitchenId}.
+          </p>
+          <p>
+            Total: <strong>Rs. {placed.totalPrice}</strong> · Prep time: {placed.totalPrepTime} min · Status: {placed.status}
+          </p>
+        </div>
+      ) : null}
+
       {dish ? (
         <div className="dish-card">
           <div className="order-head">
@@ -129,6 +164,28 @@ function AiDishBuilder() {
               <strong>Special instructions:</strong> {dish.specialInstructions}
             </p>
           ) : null}
+
+          <div className="action-row">
+            <div className="field" style={{ maxWidth: "120px" }}>
+              <label htmlFor="dish-qty">Quantity</label>
+              <input
+                id="dish-qty"
+                className="ai-input"
+                type="number"
+                min="1"
+                value={quantity}
+                onChange={(event) => setQuantity(event.target.value)}
+              />
+            </div>
+          </div>
+          <div className="action-row">
+            <button className="btn primary" onClick={handlePlaceOrder} disabled={isPlacing}>
+              {isPlacing ? "Placing…" : "🛒 Place this order"}
+            </button>
+            <button className="btn ghost" onClick={() => setDish(null)} disabled={isPlacing}>
+              Discard
+            </button>
+          </div>
         </div>
       ) : null}
     </section>

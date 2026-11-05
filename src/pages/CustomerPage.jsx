@@ -17,7 +17,7 @@ function CustomerPage() {
         </p>
       </section>
 
-      <AiDishBuilder />
+      <AiDishBuilder onOrderCreated={() => setRefreshKey((value) => value + 1)} />
 
       <CreateOrder onOrderCreated={() => setRefreshKey((value) => value + 1)} />
       <CustomerOrders refreshKey={refreshKey} />

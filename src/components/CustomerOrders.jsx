@@ -5,6 +5,7 @@ import {
   getCustomerOrders,
   ORDER_STATUS,
 } from "../api/ordersApi";
+import OrderDish from "./OrderDish";
 
 const cancellableStatuses = new Set([
   ORDER_STATUS.CREATED,
@@ -87,28 +88,7 @@ function CustomerOrders({ refreshKey }) {
               <span>{order.totalPrepTime} min</span>
             </div>
 
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Ingredient ID</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Prep Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items?.map((item, index) => (
-                    <tr key={`${order.orderId}-${index}`}>
-                      <td>{item.ingredientId}</td>
-                      <td>{item.quantity}</td>
-                      <td>Rs. {item.priceAtOrderTime}</td>
-                      <td>{item.prepTimeAtOrderTime} min</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <OrderDish order={order} />
 
             {cancellableStatuses.has(order.status) ? (
               <div className="action-row">
