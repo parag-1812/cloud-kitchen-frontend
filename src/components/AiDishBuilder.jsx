@@ -165,6 +165,48 @@ function AiDishBuilder({ onOrderCreated }) {
             </p>
           ) : null}
 
+          {dish.nutrition ? (
+            <div className="nutri-row">
+              <div className="nutri-tile">
+                <span className="nutri-value">{dish.nutrition.calories}</span>
+                <span className="nutri-label">kcal</span>
+              </div>
+              <div className="nutri-tile">
+                <span className="nutri-value">{dish.nutrition.proteinGrams}g</span>
+                <span className="nutri-label">Protein</span>
+              </div>
+              <div className="nutri-tile">
+                <span className="nutri-value">{dish.nutrition.carbsGrams}g</span>
+                <span className="nutri-label">Carbs</span>
+              </div>
+              <div className="nutri-tile">
+                <span className="nutri-value">{dish.nutrition.fatGrams}g</span>
+                <span className="nutri-label">Fat</span>
+              </div>
+            </div>
+          ) : null}
+
+          {dish.suggestions?.length ? (
+            <div className="dish-tagrow">
+              <span className="dish-detail-label">You might also like</span>
+              <div className="catalog-row">
+                {dish.suggestions.map((s) => (
+                  <button
+                    type="button"
+                    key={s}
+                    className="pill ai-example"
+                    onClick={() => {
+                      setText(s);
+                      setDish(null);
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <div className="action-row">
             <div className="field" style={{ maxWidth: "120px" }}>
               <label htmlFor="dish-qty">Quantity</label>
