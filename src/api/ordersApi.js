@@ -2,7 +2,9 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
-  timeout: 10000,
+  // Generous: Neon's free tier "scales to zero" when idle, so the first
+  // request after a pause can take a few seconds to wake the database.
+  timeout: 25000,
 });
 
 api.interceptors.request.use((config) => {
