@@ -1161,3 +1161,32 @@ th {
 .match-line.partial {
   color: #c47b00;
 }
+
+.onboard-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.onboard-emoji {
+  font-size: 34px;
+  line-height: 1;
+}
+.onboard-form {
+  margin-top: 8px;
+  max-width: 560px;
+}
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}

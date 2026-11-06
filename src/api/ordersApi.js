@@ -97,6 +97,22 @@ export async function getKitchens() {
   return response.data;
 }
 
+// Returns the signed-in partner's own kitchen, or null if they haven't registered one.
+export async function getMyKitchen() {
+  try {
+    const response = await api.get(`/kitchens/mine`);
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 404) return null;
+    throw error;
+  }
+}
+
+export async function registerKitchen(payload) {
+  const response = await api.post(`/kitchens`, payload);
+  return response.data;
+}
+
 export async function getKitchenStock(kitchenId) {
   const response = await api.get(`/kitchens/${kitchenId}/stock`);
   return response.data;

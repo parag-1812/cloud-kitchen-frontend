@@ -1,27 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import KitchenDashboard from "../components/KitchenDashboard";
 import KitchenInventory from "../components/KitchenInventory";
+import KitchenOnboarding from "../components/KitchenOnboarding";
+import { getApiErrorMessage, getMyKitchen } from "../api/ordersApi";
 
 function KitchenPage() {
-  const [kitchenIdInput, setKitchenIdInput] = useState("1");
+  const [myKitchen, setMyKitchen] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const [tab, setTab] = useState("queue");
-  const kitchenId = Number(kitchenIdInput);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const k = await getMyKitchen();
+        if (active) setMyKitchen(k);
+      } catch (err) {
+        if (active) setError(getApiErrorMessage(err));
+      } finally {
+        if (active) setIsLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="page-grid">
+        <section className="panel">
+          <p className="meta-line">Loading your kitchen…</p>
+        </section>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-grid">
+        <section className="panel">
+          <p className="error-text">{error}</p>
+        </section>
+      </div>
+    );
+  }
+
+  if (!myKitchen) {
+    return (
+      <div className="page-grid">
+        <KitchenOnboarding onRegistered={(k) => setMyKitchen(k)} />
+      </div>
+    );
+  }
 
   return (
     <div className="page-grid">
       <section className="panel compact">
         <div className="panel-header">
-          <h2>Kitchen Context</h2>
-        </div>
-        <div className="field">
-          <label htmlFor="kitchen-id">Kitchen ID</label>
-          <input
-            id="kitchen-id"
-            type="number"
-            min="1"
-            value={kitchenIdInput}
-            onChange={(event) => setKitchenIdInput(event.target.value)}
-          />
+          <div>
+            <h2>{myKitchen.name}</h2>
+            <p className="meta-line">
+              {myKitchen.vegetarianOnly ? "Pure veg" : "Veg & non-veg"} ·{" "}
+              {myKitchen.stockCount} ingredients in stock · Kitchen #{myKitchen.id}
+            </p>
+          </div>
         </div>
         <div className="seg">
           <button
@@ -39,9 +83,9 @@ function KitchenPage() {
         </div>
       </section>
       {tab === "queue" ? (
-        <KitchenDashboard kitchenId={kitchenId} />
+        <KitchenDashboard kitchenId={myKitchen.id} />
       ) : (
-        <KitchenInventory kitchenId={kitchenId} />
+        <KitchenInventory kitchenId={myKitchen.id} />
       )}
     </div>
   );
