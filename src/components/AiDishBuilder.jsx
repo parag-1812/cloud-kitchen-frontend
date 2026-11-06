@@ -242,6 +242,19 @@ function AiDishBuilder({ onOrderCreated }) {
           <p>
             Total: <strong>Rs. {placed.totalPrice}</strong> · Prep time: {placed.totalPrepTime} min · Status: {placed.status}
           </p>
+          {typeof placed.matchScore === "number" ? (
+            placed.matchScore >= 100 ? (
+              <p className="match-line full">✓ Every ingredient is in stock at this kitchen — no sourcing needed.</p>
+            ) : (
+              <p className="match-line partial">
+                {placed.matchScore}% of ingredients in-house
+                {placed.missingItems?.length
+                  ? ` · sourcing: ${placed.missingItems.join(", ")}`
+                  : ""}
+                .
+              </p>
+            )
+          ) : null}
         </div>
       ) : null}
 

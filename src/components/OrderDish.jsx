@@ -15,6 +15,26 @@ function Chip({ label, value }) {
  * dish (veg/non-veg marker, protein/style/spice/oil chips, ingredient pills,
  * special instructions). For legacy ingredient-id orders it shows the item table.
  */
+/**
+ * Shows how well the assigned kitchen covers the dish from its own stock.
+ * 100% = everything in-house; otherwise the gap is flagged as "to source".
+ */
+function MatchSignal({ order }) {
+  if (order.matchScore === null || order.matchScore === undefined) return null;
+  const full = order.matchScore >= 100;
+  const missing = order.missingItems || [];
+  return (
+    <div className="match-row">
+      <span className={`match-badge ${full ? "full" : "partial"}`}>
+        {full ? "✓ Fully available at this kitchen" : `${order.matchScore}% in-house`}
+      </span>
+      {!full && missing.length ? (
+        <span className="match-source">To source: {missing.join(", ")}</span>
+      ) : null}
+    </div>
+  );
+}
+
 function OrderDish({ order }) {
   const isCustom = Boolean(order.dishSummary || order.dishType);
 
@@ -54,6 +74,8 @@ function OrderDish({ order }) {
             <strong>Note:</strong> {order.specialInstructions}
           </p>
         ) : null}
+
+        <MatchSignal order={order} />
       </div>
     );
   }

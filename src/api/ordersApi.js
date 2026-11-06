@@ -83,6 +83,28 @@ export async function reorderOrder(orderId) {
   return response.data;
 }
 
+// ---- Catalog + kitchen inventory (Phase A: smart matching) ----
+
+export async function getCatalog() {
+  const response = await api.get(`/catalog/ingredients`);
+  return response.data;
+}
+
+export async function getKitchens() {
+  const response = await api.get(`/kitchens`);
+  return response.data;
+}
+
+export async function getKitchenStock(kitchenId) {
+  const response = await api.get(`/kitchens/${kitchenId}/stock`);
+  return response.data;
+}
+
+export async function updateKitchenStock(kitchenId, inStockIds) {
+  const response = await api.put(`/kitchens/${kitchenId}/stock`, { inStockIds });
+  return response.data;
+}
+
 export function getApiErrorMessage(error) {
   if (error?.response?.data?.message) {
     return error.response.data.message;

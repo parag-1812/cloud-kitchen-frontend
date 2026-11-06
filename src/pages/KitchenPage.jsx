@@ -1,8 +1,10 @@
 import { useState } from "react";
 import KitchenDashboard from "../components/KitchenDashboard";
+import KitchenInventory from "../components/KitchenInventory";
 
 function KitchenPage() {
   const [kitchenIdInput, setKitchenIdInput] = useState("1");
+  const [tab, setTab] = useState("queue");
   const kitchenId = Number(kitchenIdInput);
 
   return (
@@ -21,8 +23,26 @@ function KitchenPage() {
             onChange={(event) => setKitchenIdInput(event.target.value)}
           />
         </div>
+        <div className="seg">
+          <button
+            className={`seg-btn ${tab === "queue" ? "on" : ""}`}
+            onClick={() => setTab("queue")}
+          >
+            Order Queue
+          </button>
+          <button
+            className={`seg-btn ${tab === "inventory" ? "on" : ""}`}
+            onClick={() => setTab("inventory")}
+          >
+            Inventory
+          </button>
+        </div>
       </section>
-      <KitchenDashboard kitchenId={kitchenId} />
+      {tab === "queue" ? (
+        <KitchenDashboard kitchenId={kitchenId} />
+      ) : (
+        <KitchenInventory kitchenId={kitchenId} />
+      )}
     </div>
   );
 }

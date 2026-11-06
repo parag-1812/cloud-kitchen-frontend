@@ -1051,3 +1051,113 @@ th {
     gap: 8px 12px;
   }
 }
+
+/* ---- Phase A: inventory checklist + match signal ---- */
+.seg {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.seg-btn {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid #e3e3e8;
+  background: #fff;
+  color: var(--ink-soft);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.seg-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.inv-group {
+  margin-top: 18px;
+}
+.inv-group-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.inv-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.inv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid #e3e3e8;
+  background: #fff;
+  color: var(--ink-soft);
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.inv-chip:hover {
+  border-color: var(--accent);
+}
+.inv-chip.on {
+  background: rgba(46, 204, 113, 0.12);
+  border-color: var(--green);
+  color: var(--green-dark);
+}
+.inv-check {
+  font-weight: 800;
+  opacity: 0.8;
+}
+
+.success-inline {
+  color: var(--green-dark);
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+.match-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 10px;
+}
+.match-badge {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.match-badge.full {
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--green-dark);
+}
+.match-badge.partial {
+  background: rgba(255, 159, 28, 0.16);
+  color: #c47b00;
+}
+.match-source {
+  font-size: 13px;
+  color: var(--muted);
+}
+.match-line {
+  margin: 8px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.match-line.full {
+  color: var(--green-dark);
+}
+.match-line.partial {
+  color: #c47b00;
+}
