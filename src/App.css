@@ -1161,6 +1161,24 @@ th {
 .match-line.partial {
   color: #c47b00;
 }
+.match-line.swap {
+  color: #1d7fb3;
+}
+.match-swap {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d7fb3;
+}
+
+/* Role-aware ingredient pills in the AI dish preview */
+.pill.role-optional {
+  opacity: 0.7;
+  border-style: dashed;
+}
+.pill.role-substitutable {
+  border-color: #1d7fb3;
+  color: #1d7fb3;
+}
 
 .onboard-head {
   display: flex;

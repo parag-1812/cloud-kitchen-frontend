@@ -255,6 +255,9 @@ function AiDishBuilder({ onOrderCreated }) {
               </p>
             )
           ) : null}
+          {placed.substitutions?.length ? (
+            <p className="match-line swap">🔄 Smart swap: {placed.substitutions.join(", ")}.</p>
+          ) : null}
         </div>
       ) : null}
 
@@ -284,7 +287,30 @@ function AiDishBuilder({ onOrderCreated }) {
             <Detail label="Oil" value={dish.oilLevel} />
           </div>
 
-          {dish.ingredients?.length ? (
+          {dish.ingredientSpecs?.length ? (
+            <div className="dish-tagrow">
+              <span className="dish-detail-label">Ingredients</span>
+              <div className="catalog-row">
+                {dish.ingredientSpecs.map((s) => (
+                  <span
+                    className={`pill role-${(s.role || "core").toLowerCase()}`}
+                    key={s.name}
+                    title={
+                      s.role === "SUBSTITUTABLE" && s.substitute
+                        ? `Can swap for ${s.substitute}`
+                        : s.role === "OPTIONAL"
+                        ? "Can be skipped"
+                        : "Essential"
+                    }
+                  >
+                    {s.name}
+                    {s.role === "OPTIONAL" ? " · optional" : ""}
+                    {s.role === "SUBSTITUTABLE" && s.substitute ? ` 🔄 ${s.substitute}` : ""}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : dish.ingredients?.length ? (
             <TagRow label="Ingredients" tags={dish.ingredients} />
           ) : null}
           {dish.dietaryTags?.length ? (

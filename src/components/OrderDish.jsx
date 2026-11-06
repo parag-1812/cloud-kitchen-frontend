@@ -23,11 +23,15 @@ function MatchSignal({ order }) {
   if (order.matchScore === null || order.matchScore === undefined) return null;
   const full = order.matchScore >= 100;
   const missing = order.missingItems || [];
+  const subs = order.substitutions || [];
   return (
     <div className="match-row">
       <span className={`match-badge ${full ? "full" : "partial"}`}>
         {full ? "✓ Fully available at this kitchen" : `${order.matchScore}% in-house`}
       </span>
+      {subs.length ? (
+        <span className="match-swap">🔄 {subs.join(", ")}</span>
+      ) : null}
       {!full && missing.length ? (
         <span className="match-source">To source: {missing.join(", ")}</span>
       ) : null}
