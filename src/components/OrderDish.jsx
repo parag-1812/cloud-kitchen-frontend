@@ -25,17 +25,28 @@ function MatchSignal({ order }) {
   const missing = order.missingItems || [];
   const subs = order.substitutions || [];
   return (
-    <div className="match-row">
-      <span className={`match-badge ${full ? "full" : "partial"}`}>
-        {full ? "✓ Fully available at this kitchen" : `${order.matchScore}% in-house`}
-      </span>
-      {subs.length ? (
-        <span className="match-swap">🔄 {subs.join(", ")}</span>
+    <>
+      <div className="match-row">
+        <span className={`match-badge ${full ? "full" : "partial"}`}>
+          {full ? "✓ Fully available at this kitchen" : `${order.matchScore}% in-house`}
+        </span>
+        {subs.length ? (
+          <span className="match-swap">🔄 {subs.join(", ")}</span>
+        ) : null}
+        {!full && missing.length ? (
+          <span className="match-source">To source: {missing.join(", ")}</span>
+        ) : null}
+      </div>
+      {order.sourcingStatus ? (
+        <div className="match-row">
+          <span className={`sourcing-badge s-${order.sourcingStatus.toLowerCase()}`}>
+            📦 {order.sourcingStatus === "UNFULFILLED"
+              ? "No supplier found for the missing items"
+              : `Sourcing ${missing.join(", ")} from ${order.sourcingSupplierName} · ${order.sourcingStatus}`}
+          </span>
+        </div>
       ) : null}
-      {!full && missing.length ? (
-        <span className="match-source">To source: {missing.join(", ")}</span>
-      ) : null}
-    </div>
+    </>
   );
 }
 

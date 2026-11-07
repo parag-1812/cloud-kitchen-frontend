@@ -1,12 +1,27 @@
 import { useState } from "react";
-import { login } from "../api/authApi";
+import { login, signup } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
 
 const DEMO_USERS = ["customer", "kitchen", "admin"];
 
+const ROLES = [
+  { value: "USER", label: "Customer" },
+  { value: "KITCHEN", label: "Kitchen / Restaurant" },
+  { value: "SUPPLIER", label: "Ingredient Supplier" },
+];
+
+function routeForRole(role, navigate) {
+  if (role === "USER") navigate("/");
+  else if (role === "KITCHEN") navigate("/kitchen");
+  else if (role === "SUPPLIER") navigate("/supplier");
+  else if (role === "ADMIN") navigate("/admin");
+}
+
 function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("USER");
+  const [isSignup, setIsSignup] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,17 +32,18 @@ function LoginPage() {
     setError("");
     setIsLoading(true);
     try {
+      if (isSignup) {
+        await signup(username, password, role);
+      }
       const data = await login(username, password);
       localStorage.setItem("token", data.token);
 
       const payload = JSON.parse(atob(data.token.split(".")[1]));
       localStorage.setItem("role", payload.role);
 
-      if (payload.role === "USER") navigate("/");
-      else if (payload.role === "KITCHEN") navigate("/kitchen");
-      else if (payload.role === "ADMIN") navigate("/admin");
+      routeForRole(payload.role, navigate);
     } catch (err) {
-      setError("Invalid username or password.");
+      setError(isSignup ? "Could not create that account (username may be taken)." : "Invalid username or password.");
     } finally {
       setIsLoading(false);
     }
@@ -47,8 +63,12 @@ function LoginPage() {
           <span className="kicker">Cloud Kitchen</span>
         </div>
 
-        <h1 className="auth-title">Welcome back</h1>
-        <p className="auth-sub">Sign in to order food made exactly the way you imagine it.</p>
+        <h1 className="auth-title">{isSignup ? "Create your account" : "Welcome back"}</h1>
+        <p className="auth-sub">
+          {isSignup
+            ? "Join as a customer, a kitchen, or an ingredient supplier."
+            : "Sign in to order food made exactly the way you imagine it."}
+        </p>
 
         <div className="field">
           <label htmlFor="login-username">Username</label>
@@ -72,9 +92,32 @@ function LoginPage() {
           />
         </div>
 
+        {isSignup ? (
+          <div className="field">
+            <label htmlFor="signup-role">I am a…</label>
+            <select
+              id="signup-role"
+              className="ai-input"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              {ROLES.map((r) => (
+                <option key={r.value} value={r.value}>{r.label}</option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+
         <button type="submit" className="btn primary auth-btn" disabled={isLoading}>
-          {isLoading ? "Signing in…" : "Sign in"}
+          {isLoading ? (isSignup ? "Creating…" : "Signing in…") : isSignup ? "Create account" : "Sign in"}
         </button>
+
+        <p className="auth-toggle">
+          {isSignup ? "Already have an account?" : "New here?"}{" "}
+          <button type="button" className="auth-link" onClick={() => { setIsSignup(!isSignup); setError(""); }}>
+            {isSignup ? "Sign in" : "Create one"}
+          </button>
+        </p>
 
         {error ? <p className="error-text">{error}</p> : null}
 

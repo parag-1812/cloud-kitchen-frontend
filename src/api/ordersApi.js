@@ -123,6 +123,43 @@ export async function updateKitchenStock(kitchenId, inStockIds) {
   return response.data;
 }
 
+// ---- Suppliers + sourcing (Phase C) ----
+
+export async function getMySupplier() {
+  try {
+    const response = await api.get(`/suppliers/mine`);
+    return response.data;
+  } catch (error) {
+    if (error?.response?.status === 404) return null;
+    throw error;
+  }
+}
+
+export async function registerSupplier(payload) {
+  const response = await api.post(`/suppliers`, payload);
+  return response.data;
+}
+
+export async function getSupplierStock(supplierId) {
+  const response = await api.get(`/suppliers/${supplierId}/stock`);
+  return response.data;
+}
+
+export async function updateSupplierStock(supplierId, inStockIds) {
+  const response = await api.put(`/suppliers/${supplierId}/stock`, { inStockIds });
+  return response.data;
+}
+
+export async function getSupplierSourcing() {
+  const response = await api.get(`/sourcing/supplier`);
+  return response.data;
+}
+
+export async function advanceSourcing(requestId) {
+  const response = await api.patch(`/sourcing/${requestId}/advance`);
+  return response.data;
+}
+
 export function getApiErrorMessage(error) {
   if (error?.response?.data?.message) {
     return error.response.data.message;

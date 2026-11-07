@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 import AdminPage from "./pages/AdminPage";
+import SupplierPage from "./pages/SupplierPage";
 
 function NavLink({ to, children }) {
   const location = useLocation();
@@ -42,6 +43,7 @@ function AppLayout({ children }) {
         <nav className="nav-tabs">
           {role === "USER" && <NavLink to="/">Customer</NavLink>}
           {role === "KITCHEN" && <NavLink to="/kitchen">Kitchen</NavLink>}
+          {role === "SUPPLIER" && <NavLink to="/supplier">Supplier</NavLink>}
           {role === "ADMIN" && <NavLink to="/admin">Admin</NavLink>}
           <button onClick={handleLogout} className="logout-btn">
             Logout
@@ -82,6 +84,17 @@ function App() {
           <ProtectedRoute allowedRole="KITCHEN">
             <AppLayout>
               <KitchenPage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/supplier"
+        element={
+          <ProtectedRoute allowedRole="SUPPLIER">
+            <AppLayout>
+              <SupplierPage />
             </AppLayout>
           </ProtectedRoute>
         }
