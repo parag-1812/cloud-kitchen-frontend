@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { login, signup } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
+import Logo from "../components/Logo";
 
 const DEMO_USERS = ["customer", "kitchen", "admin"];
 
@@ -59,8 +60,8 @@ function LoginPage() {
     <div className="auth-wrap">
       <form className="auth-card" onSubmit={handleLogin}>
         <div className="auth-brand">
-          <span className="auth-logo">🍳</span>
-          <span className="kicker">Cloud Kitchen</span>
+          <span className="auth-logo"><Logo size={40} /></span>
+          <span className="kicker">Crave</span>
         </div>
 
         <h1 className="auth-title">{isSignup ? "Create your account" : "Welcome back"}</h1>

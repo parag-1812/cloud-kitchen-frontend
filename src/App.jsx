@@ -6,6 +6,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 import AdminPage from "./pages/AdminPage";
 import SupplierPage from "./pages/SupplierPage";
+import Logo from "./components/Logo";
 
 function NavLink({ to, children }) {
   const location = useLocation();
@@ -33,10 +34,10 @@ function AppLayout({ children }) {
     <div className="app-layout">
       <header className="topbar">
         <div className="brand">
-          <span className="brand-logo">🍳</span>
+          <span className="brand-logo"><Logo size={40} /></span>
           <div className="brand-text">
-            <span className="brand-name">Cloud Kitchen</span>
-            <span className="brand-tag">Order food, your way</span>
+            <span className="brand-name">Crave</span>
+            <span className="brand-tag">Any dish, your way</span>
           </div>
         </div>
 

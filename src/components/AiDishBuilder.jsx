@@ -3,6 +3,7 @@ import { getAiErrorMessage, parseDish } from "../api/aiApi";
 import { createCustomOrder } from "../api/ordersApi";
 import { getApiErrorMessage } from "../api/ordersApi";
 import { foodEmoji } from "../utils/foodEmoji";
+import Logo from "./Logo";
 
 const EXAMPLES = [
   "Boneless chicken in tomato gravy, medium spicy, extra garlic, less oil",
@@ -143,9 +144,24 @@ function AiDishBuilder({ onOrderCreated }) {
       setText((prev) => (prev ? `${prev} ${heard}` : heard));
       setVoiceConfidence(res.confidence ? Math.round(res.confidence * 100) : null);
     };
-    rec.onerror = () => setListening(false);
+    rec.onerror = (e) => {
+      setListening(false);
+      const msgs = {
+        "not-allowed": "Microphone access is blocked — allow it in your browser's address bar and try again.",
+        "service-not-allowed": "Microphone access is blocked — allow it in your browser settings and try again.",
+        "no-speech": "Didn't catch anything — tap Speak and say your dish.",
+        "audio-capture": "No microphone found — plug one in or type your dish instead.",
+        "network": "Voice needs an internet connection — check your network and try again.",
+      };
+      setError(msgs[e.error] || "Voice input didn't work — you can type your dish instead.");
+    };
     rec.onend = () => setListening(false);
-    rec.start();
+    try {
+      rec.start();
+    } catch {
+      setListening(false);
+      setError("Voice input didn't start — you can type your dish instead.");
+    }
   }
 
   async function handlePlaceOrder() {
@@ -175,7 +191,7 @@ function AiDishBuilder({ onOrderCreated }) {
   return (
     <section className="panel ai-hero">
       <div className="ai-hero-head">
-        <span className="ai-hero-emoji">🍳</span>
+        <span className="ai-hero-emoji"><Logo size={54} /></span>
         <div>
           <h2>What are you craving?</h2>
           <p>
