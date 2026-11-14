@@ -24,3 +24,18 @@ export const getAllOrders = async () => {
   const res = await api.get("/admin/orders");
   return res.data;
 };
+
+export const getKitchenDirectory = async () => {
+  const res = await api.get("/admin/kitchens/directory");
+  return res.data;
+};
+
+export const getSupplierDirectory = async () => {
+  const res = await api.get("/admin/suppliers/directory");
+  return res.data;
+};
+
+export const getCustomerDirectory = async () => {
+  const res = await api.get("/admin/customers/directory");
+  return res.data;
+};

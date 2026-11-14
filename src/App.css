@@ -1015,6 +1015,32 @@ tbody td {
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: var(--surface-2); }
 
+/* ---------- Admin directory: filters + area groups ---------- */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.filter-bar input {
+  flex: 1;
+  min-width: 180px;
+}
+.filter-bar select {
+  width: auto;
+  min-width: 150px;
+}
+.area-group {
+  margin-bottom: 20px;
+}
+.area-title {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-ink);
+  letter-spacing: 0.02em;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 640px) {
   .topbar { flex-wrap: wrap; }
