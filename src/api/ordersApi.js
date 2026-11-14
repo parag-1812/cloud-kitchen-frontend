@@ -155,6 +155,16 @@ export async function getSupplierSourcing() {
   return response.data;
 }
 
+export async function getKitchenEarnings() {
+  const response = await api.get(`/earnings/kitchen`);
+  return response.data;
+}
+
+export async function getSupplierEarnings() {
+  const response = await api.get(`/earnings/supplier`);
+  return response.data;
+}
+
 export async function advanceSourcing(requestId) {
   const response = await api.patch(`/sourcing/${requestId}/advance`);
   return response.data;

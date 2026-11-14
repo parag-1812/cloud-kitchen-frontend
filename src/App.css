@@ -1215,6 +1215,10 @@ th {
   padding: 0;
 }
 
+.earnings-grid {
+  margin-top: 14px;
+}
+
 .onboard-head {
   display: flex;
   gap: 14px;

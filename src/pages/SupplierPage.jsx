@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import SupplierInventory from "../components/SupplierInventory";
 import SupplierSourcingQueue from "../components/SupplierSourcingQueue";
-import { getApiErrorMessage, getMySupplier, registerSupplier } from "../api/ordersApi";
+import EarningsTiles from "../components/EarningsTiles";
+import { getApiErrorMessage, getMySupplier, getSupplierEarnings, registerSupplier } from "../api/ordersApi";
+
+const rs = (n) => `Rs. ${Number(n || 0).toFixed(0)}`;
 
 const DEFAULT_LOCATION = { lat: 22.7196, lng: 75.8577 };
 
@@ -103,6 +106,7 @@ function SupplierOnboarding({ onRegistered }) {
 
 function SupplierPage() {
   const [supplier, setSupplier] = useState(null);
+  const [earnings, setEarnings] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [tab, setTab] = useState("requests");
@@ -113,6 +117,10 @@ function SupplierPage() {
       try {
         const s = await getMySupplier();
         if (active) setSupplier(s);
+        if (s) {
+          const e = await getSupplierEarnings();
+          if (active) setEarnings(e);
+        }
       } catch (err) {
         if (active) setError(getApiErrorMessage(err));
       } finally {
@@ -157,6 +165,15 @@ function SupplierPage() {
             <p className="meta-line">{supplier.stockCount} ingredients supplied · Supplier #{supplier.id}</p>
           </div>
         </div>
+        {earnings ? (
+          <EarningsTiles
+            tiles={[
+              { label: "Requests", value: earnings.requests },
+              { label: "Delivered", value: earnings.delivered },
+              { label: "Earnings", value: rs(earnings.payout), accent: true },
+            ]}
+          />
+        ) : null}
         <div className="seg">
           <button className={`seg-btn ${tab === "requests" ? "on" : ""}`} onClick={() => setTab("requests")}>
             Sourcing Requests

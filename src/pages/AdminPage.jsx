@@ -42,9 +42,17 @@ function AdminPage() {
             <span className="stat-label">Total Orders</span>
             <span className="stat-value">{stats.totalOrders}</span>
           </div>
+          <div className="stat-tile">
+            <span className="stat-label">GMV (order value)</span>
+            <span className="stat-value">Rs. {Number(stats.gmv ?? stats.totalRevenue ?? 0).toFixed(0)}</span>
+          </div>
           <div className="stat-tile accent">
-            <span className="stat-label">Total Revenue</span>
-            <span className="stat-value">Rs. {Number(stats.totalRevenue || 0).toFixed(2)}</span>
+            <span className="stat-label">Platform Revenue</span>
+            <span className="stat-value">Rs. {Number(stats.platformRevenue || 0).toFixed(0)}</span>
+          </div>
+          <div className="stat-tile">
+            <span className="stat-label">Kitchen Payouts</span>
+            <span className="stat-value">Rs. {Number(stats.kitchenPayouts || 0).toFixed(0)}</span>
           </div>
         </div>
 
