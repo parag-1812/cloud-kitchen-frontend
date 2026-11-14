@@ -1,64 +1,154 @@
+/* ============================================================
+   Cloud Kitchen — "Midnight Kitchen" design system (v2)
+   A premium dark, AI-product aesthetic. Electric violet accent,
+   mint for fresh/veg, amber for money, rose for non-veg.
+   ============================================================ */
 :root {
-  /* Brand palette (from the product vision) */
-  --orange: #ff6b35;
-  --orange-dark: #e2551f;
-  --green: #2ecc71;
-  --green-dark: #27ae60;
-  --charcoal: #1e1e1e;
+  /* canvas + surfaces */
+  --bg: #0b0c11;
+  --surface: #121521;
+  --surface-2: #171a28;
+  --elevated: #1d2130;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
 
-  /* Semantic tokens reused across the app */
-  --bg-a: #fff5ef;
-  --bg-b: #f4f5f7;
-  --panel-bg: #ffffff;
-  --ink: #1e1e1e;
-  --ink-soft: #3b3b44;
-  --muted: #86868f;
-  --border: #eceaf0;
-  --accent: #ff6b35;
+  /* text */
+  --ink: #f3f4f8;
+  --ink-soft: #c6c9d6;
+  --muted: #878ca0;
+  --faint: #565c70;
 
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color: var(--ink);
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* accent + semantic */
+  --accent: #7c6bff;
+  --accent-2: #a690ff;
+  --accent-soft: rgba(124, 107, 255, 0.14);
+  --mint: #33e0a1;
+  --mint-soft: rgba(51, 224, 161, 0.14);
+  --amber: #f6b44c;
+  --amber-soft: rgba(246, 180, 76, 0.14);
+  --rose: #ff5d7a;
+  --rose-soft: rgba(255, 93, 122, 0.14);
+  --sky: #53b6ff;
+  --sky-soft: rgba(83, 182, 255, 0.14);
+
+  --accent-grad: linear-gradient(135deg, #8a78ff 0%, #6f5bff 100%);
+  --radius: 16px;
+  --radius-sm: 11px;
+  --radius-lg: 22px;
+  --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 6px 18px -10px rgba(0, 0, 0, 0.6);
+  --ring: 0 0 0 3px var(--accent-soft);
+
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
-  min-width: 320px;
-  background:
-    radial-gradient(circle at 12% -5%, rgba(255, 107, 53, 0.16), transparent 42%),
-    radial-gradient(circle at 95% 0%, rgba(46, 204, 113, 0.1), transparent 40%),
-    linear-gradient(180deg, var(--bg-a), var(--bg-b) 320px);
-  background-attachment: fixed;
-  color: var(--ink);
+  padding: 0;
 }
 
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(1100px 600px at 80% -10%, rgba(124, 107, 255, 0.18), transparent 60%),
+    radial-gradient(900px 500px at 0% 0%, rgba(51, 224, 161, 0.08), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  line-height: 1.5;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.3rem; }
+h3 { font-size: 1.05rem; }
+
+p { margin: 0; }
+
 a {
+  color: var(--accent-2);
   text-decoration: none;
 }
 
-input,
-textarea {
-  width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 11px 13px;
-  font: inherit;
-  color: var(--ink);
-  background: #fff;
+button {
+  font-family: inherit;
 }
 
-input:focus-visible,
-textarea:focus-visible {
+code {
+  font-family: "SF Mono", ui-monospace, Menlo, monospace;
+  background: var(--elevated);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  color: var(--accent-2);
+}
+
+/* Form controls — shared base */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  width: 100%;
   outline: none;
-  border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.16);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--faint);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: var(--ring);
+  background: var(--surface);
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23878ca0' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--elevated); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+::selection {
+  background: var(--accent-soft);
+  color: #fff;
 }
