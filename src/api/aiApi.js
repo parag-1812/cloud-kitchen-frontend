@@ -5,7 +5,7 @@ const AI_BASE_URL =
 
 const api = axios.create({
   baseURL: AI_BASE_URL,
-  timeout: 40000, // the model can take a few seconds to think
+  timeout: 90000, // model think time + free-tier wake-up
 });
 
 api.interceptors.request.use((config) => {

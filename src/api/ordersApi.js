@@ -4,7 +4,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
   // Generous: Neon's free tier "scales to zero" when idle, so the first
   // request after a pause can take a few seconds to wake the database.
-  timeout: 25000,
+  timeout: 90000, // free-tier hosts can take ~1 min to wake up
 });
 
 api.interceptors.request.use((config) => {
